@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 
 interface CommentFormProps {
@@ -22,8 +23,8 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
       await onSubmit(name, content);
       setName('');
       setContent('');
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit comment.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to submit comment.');
     } finally {
       setLoading(false);
     }

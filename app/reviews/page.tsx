@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 async function fetchReviews(): Promise<Post[]> {
-  const { data, error } = await supabase
+  const { data, error: _error } = await supabase
     .from('posts')
     .select('*')
     .eq('type', 'review')

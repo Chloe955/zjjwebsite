@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 async function fetchReflections(): Promise<Post[]> {
-  const { data, error } = await supabase
+  const { data, error: _error } = await supabase
     .from('posts')
     .select('*')
     .eq('type', 'reflection')

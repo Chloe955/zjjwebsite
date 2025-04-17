@@ -5,22 +5,18 @@ import CommentForm from '../../../components/CommentForm';
 import { Post, Comment } from '../../../types';
 import { notFound } from 'next/navigation';
 
-interface PostPageProps {
-  params: { slug: string };
-}
-
 async function fetchPost(slug: string): Promise<Post | null> {
-  const { data, error } = await supabase
+  const { data, error: _error } = await supabase
     .from('posts')
     .select('*')
     .eq('slug', slug)
     .single();
-  if (error) return null;
+  if (_error) return null;
   return data as Post;
 }
 
 async function fetchComments(post_id: string): Promise<Comment[]> {
-  const { data, error } = await supabase
+  const { data, error: _error } = await supabase
     .from('comments')
     .select('*')
     .eq('post_id', post_id)
@@ -28,7 +24,11 @@ async function fetchComments(post_id: string): Promise<Comment[]> {
   return data || [];
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+type Props = {
+  params: { slug: string }
+};
+
+export default async function PostPage({ params }: Props) {
   const post = await fetchPost(params.slug);
   if (!post) {
     return notFound();
@@ -37,6 +37,8 @@ export default async function PostPage({ params }: PostPageProps) {
 
   // TODO: Implement comment submission logic
   async function handleCommentSubmit(name: string, content: string) {
+    if (!post) return; // This should never happen due to the earlier notFound() check
+    
     await supabase.from('comments').insert({
       post_id: post.id,
       author_name: name,

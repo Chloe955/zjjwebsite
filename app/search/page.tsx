@@ -1,10 +1,11 @@
-import React from 'react';
+"use client";
+import React, { Suspense } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import PostCard from '../components/PostCard';
 import { Post } from '../../types';
 import { useSearchParams } from 'next/navigation';
 
-export default function SearchPage() {
+function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = React.useState<Post[]>([]);
@@ -36,12 +37,12 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <section className="max-w-2xl mx-auto py-12">
+    <>
       <h1 className="text-3xl font-bold mb-4">Search Results</h1>
       {loading && <div className="mb-4 text-gray-500">Searching...</div>}
       {error && <div className="mb-4 text-red-600">{error}</div>}
       {!loading && !error && results.length === 0 && query.trim() && (
-        <div className="mb-4 text-gray-500">No results found for "{query}".</div>
+        <div className="mb-4 text-gray-500">No results found for &ldquo;{query}&rdquo;.</div>
       )}
       {!loading && !error && results.length === 0 && !query.trim() && (
         <div className="mb-4 text-gray-500">Enter a search query above.</div>
@@ -51,6 +52,16 @@ export default function SearchPage() {
           <PostCard key={post.id} post={post} />
         ))}
       </div>
+    </>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <section className="max-w-2xl mx-auto py-12">
+      <Suspense fallback={<div>Loading search...</div>}>
+        <SearchResults />
+      </Suspense>
     </section>
   );
 }
