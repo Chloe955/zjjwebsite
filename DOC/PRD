@@ -1,0 +1,122 @@
+# Product Requirements Document (PRD) - Personal Brand Website
+
+**Current Date:** 2025-04-17
+**Version:** 1.1
+
+**1. Introduction**
+
+This document outlines the requirements for a personal brand website. The goal is to create an online presence showcasing the owner's professional background, writings, learning journey, hobbies, and personal reflections, while also facilitating interaction through contact forms and comments, and providing easy access to professional network profiles. The website will be built using Next.js for the frontend, Supabase for the backend (content storage, comments, contact submissions), styled with Tailwind CSS, and deployed on Vercel.
+
+**2. Goals**
+
+*   Establish a professional online presence.
+*   Showcase expertise in relevant fields (e.g., Pharma industry, research).
+*   Share knowledge and insights through articles and reviews.
+*   Document personal learning processes and progress.
+*   Share personal interests and reflections to build a more complete personal brand.
+*   Enable visitors to easily contact the owner.
+*   Foster discussion via a comments section on relevant content.
+*   Allow users to easily find relevant content via search.
+*   Provide clear links to professional and social profiles (LinkedIn, GitHub, WeChat Official Account).
+*   Serve as a central hub for professional and personal information and interaction.
+
+**3. Target Audience**
+
+*   Potential employers or collaborators
+*   Peers in the industry or academic fields
+*   Individuals interested in the owner's areas of expertise or hobbies
+*   Readers of the owner's content
+*   Personal connections (friends, family)
+
+**4. Key Features**
+
+*   **F1: Homepage:**
+    *   A brief welcome message.
+    *   Highlights or links to recent articles, learning notes, or other key sections.
+    *   Clear navigation to other sections of the site.
+*   **F2: About Me Section:**
+    *   Display personal introduction.
+    *   Detail professional background, expertise, and relevant experience.
+    *   Optionally include a professional photograph.
+    *   Include links/icons to professional networks (LinkedIn, GitHub).
+*   **F3: Literature Reviews Section:**
+    *   List published or written literature reviews.
+    *   Each review should have its own page displaying the full content (or a summary/link).
+    *   Display title, date, abstract/summary, and potentially categories/tags.
+    *   Include Comments Section (F13) on individual review pages.
+*   **F4: Pharma Industry Analysis Section:**
+    *   List articles containing analysis and commentary on the pharmaceutical industry.
+    *   Each article should have its own page displaying the full content.
+    *   Display title, date, content, and potentially categories/tags.
+    *   Include Comments Section (F13) on individual article pages.
+*   **F5: Learning Journey Section:**
+    *   Document ongoing learning activities (new skills, technologies, subjects).
+    *   Each entry should function like a blog post or note.
+    *   Display title, date, content detailing the learning process/findings.
+    *   Include Comments Section (F13) on individual learning note pages.
+*   **F6: Hobbies Section:**
+    *   Showcase personal interests (e.g., Windsurfing, Dancing).
+    *   Can include text descriptions, photos, or short anecdotes.
+*   **F7: Life Reflections Section:**
+    *   Share personal growth insights and life philosophies.
+    *   Each reflection should have its own page or entry.
+    *   Display title, date, and content.
+    *   Include Comments Section (F13) on individual reflection pages.
+*   **F8: Content Management (Backend):**
+    *   Ability to easily add, edit, and delete content for all dynamic sections (Literature Reviews, Pharma Analysis, Learning Journey, Reflections) via Supabase dashboard or a dedicated admin interface (future).
+*   **F9: Navigation:**
+    *   Clear and consistent navigation menu (e.g., Header) linking to all main sections (Home, About, Reviews, Analysis, Learning, Hobbies, Reflections, Contact).
+    *   Include Search Functionality (F12) input field in the header.
+*   **F10: Footer:**
+    *   Include copyright information.
+    *   Include links/icons to professional/social networks (LinkedIn, GitHub, WeChat Official Account QR code/link).
+*   **F11: Contact Form:**
+    *   Dedicated 'Contact' page (`/contact`).
+    *   Form fields: Name (required), Email (required, validated), Message (required).
+    *   Submission mechanism: Store message details in a Supabase table. Optionally trigger an email notification to the site owner (requires Supabase Function or external service).
+    *   Include basic spam protection (e.g., honeypot field or CAPTCHA - future consideration).
+    *   Display success/error message upon submission.
+*   **F12: Search Functionality:**
+    *   Search input field prominently displayed (e.g., in Header).
+    *   Search scope: Across titles and content of Literature Reviews, Pharma Analysis, Learning Journey, and Life Reflections.
+    *   Display results on a dedicated search results page (`/search?q=query`).
+    *   Results should show title, snippet of matching text, and link to the relevant page.
+    *   Implementation: Can start with client-side filtering for simpler sites, or use Supabase full-text search / database functions for better performance on larger datasets.
+*   **F13: Blog Comments Section:**
+    *   Appear at the bottom of individual content pages (Reviews, Analysis, Learning, Reflections).
+    *   Display existing comments for the specific post.
+    *   Form to submit new comments: Name (required), Comment (required).
+    *   Store comments in a Supabase table, linked to the specific post ID/slug.
+    *   Basic moderation might be needed (handled via Supabase dashboard initially).
+    *   Display comments chronologically.
+    *   Consider anonymous comments initially, or add simple authentication later.
+*   **F14: Professional Network Integration:**
+    *   Display clickable icons/links to LinkedIn and GitHub profiles (e.g., in Footer, About page).
+    *   Display WeChat Official Account QR code or link (e.g., in Footer or Contact page).
+
+**5. Non-Functional Requirements**
+
+*   **NFR1: Performance:** Fast load times. Utilize Next.js SSG/ISR. Optimize images. Efficient database queries.
+*   **NFR2: Responsiveness:** Fully responsive design (mobile, tablet, desktop) using Tailwind CSS utility classes.
+*   **NFR3: Usability:** Intuitive navigation, clear layout, readable typography, accessible forms.
+*   **NFR4: Maintainability:** Well-structured, clean code. Straightforward content updates via Supabase.
+*   **NFR5: Deployment:** Seamless deployment and updates via Vercel integration with Git.
+*   **NFR6: Security:** Basic protection against spam on contact and comment forms. Ensure proper RLS policies in Supabase.
+*   **NFR7: Accessibility (A11y):** Adhere to basic web accessibility standards (semantic HTML, keyboard navigation, sufficient color contrast).
+
+**6. Technology Stack**
+
+*   **Frontend:** Next.js (React Framework)
+*   **Backend/Database:** Supabase (PostgreSQL, Auth, Storage, Functions)
+*   **Styling:** Tailwind CSS
+*   **Deployment:** Vercel
+*   **Potential Additions:** Email service (for contact form notifications, e.g., Resend, SendGrid), CAPTCHA service (e.g., hCaptcha, Cloudflare Turnstile).
+
+**7. Future Considerations (Optional)**
+
+*   User authentication for comments.
+*   Advanced comment features (replies, likes).
+*   Admin panel/CMS interface for content management.
+*   More sophisticated search (e.g., filtering by category/tag).
+*   Multilingual support.
+*   Analytics integration.

@@ -1,0 +1,5 @@
+/* Tailwind typography overrides for prose class */
+.prose {
+  max-width: 100%;
+  color: #222;
+}

@@ -1,0 +1,127 @@
+# DEVELOPMENT-CHECKLIST.md - Personal Brand Website
+
+This checklist breaks down the development of the Personal Brand Website using Next.js, Supabase, Tailwind CSS, and Vercel into actionable tasks.
+
+**Current Date:** 2025-04-17
+**Version:** 1.1
+
+## Phase 1: Project Setup & Configuration
+
+*   [ ] **Task 1.1:** Initialize Next.js project (`npx create-next-app@latest --typescript`). (Using TypeScript is recommended for larger projects).
+*   [ ] **Task 1.2:** Set up a new project on Supabase ([supabase.com](https://supabase.com)). Note down Project URL and Anon Key.
+*   [ ] **Task 1.3:** Install necessary dependencies:
+    *   `@supabase/supabase-js`
+    *   `tailwindcss postcss autoprefixer` (and initialize Tailwind: `npx tailwindcss init -p`)
+    *   `react-markdown` (or similar for rendering content)
+    *   `date-fns` (for date formatting)
+    *   (Optional) `react-hook-form` (for form handling)
+    *   (Optional) Icons library (e.g., `react-icons`)
+*   [ ] **Task 1.4:** Configure Tailwind CSS (`tailwind.config.js`, `postcss.config.js`, `styles/globals.css`).
+*   [ ] **Task 1.5:** Configure environment variables (`.env.local`) for Supabase URL and Anon Key (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+*   [ ] **Task 1.6:** Initialize Git repository (`git init`) and create initial commit. Link to GitHub/GitLab/Bitbucket.
+*   [ ] **Task 1.7:** Set up basic project structure (e.g., `components`, `pages`, `styles`, `utils`, `lib`, `types`).
+*   [ ] **Task 1.8:** Create a Supabase client helper function (`lib/supabaseClient.ts`).
+*   [ ] **Task 1.9:** Define TypeScript types for data models (e.g., `types/index.ts` for Post, Comment, Contact).
+
+## Phase 2: Backend Setup (Supabase)
+
+*   [ ] **Task 2.1:** **Posts Table:**
+    *   [ ] Define and create `posts` table (schema as defined in PRD: id, created_at, title, slug, content, published_date, type).
+    *   [ ] Enable RLS on `posts`.
+    *   [ ] Create RLS policy for public read access on `posts`.
+*   [ ] **Task 2.2:** **Comments Table:**
+    *   [ ] Define and create `comments` table (e.g., `id`, `created_at`, `post_id` (FK to posts.id or use `post_slug`), `author_name`, `content`).
+    *   [ ] Enable RLS on `comments`.
+    *   [ ] Create RLS policy for public read access on `comments`.
+    *   [ ] Create RLS policy to allow anonymous/public inserts into `comments`. (`INSERT WITH CHECK (true)`)
+*   [ ] **Task 2.3:** **Contacts Table:**
+    *   [ ] Define and create `contact_submissions` table (e.g., `id`, `created_at`, `name`, `email`, `message`, `is_read` (boolean, default false)).
+    *   [ ] Enable RLS on `contact_submissions`.
+    *   [ ] Create RLS policy to allow anonymous/public inserts. (`INSERT WITH CHECK (true)`)
+    *   [ ] Create RLS policy to *prevent* public reads (only authenticated users, e.g., admin role, should read - or disable read entirely via API if only using for notifications).
+*   [ ] **Task 2.4:** (Optional) **Contact Form Notification:**
+    *   [ ] Consider setting up a Supabase Database Function (triggered on `contact_submissions` insert) or an Edge Function to send an email notification using an external service (like Resend). Requires setting up secrets for API keys.
+*   [ ] **Task 2.5:** (Optional) **Search Optimization:**
+    *   [ ] Consider creating a database function (`rpc`) in Supabase for full-text search across relevant `posts` columns if client-side search proves insufficient.
+*   [ ] **Task 2.6:** Add initial test data for posts, and potentially comments.
+
+## Phase 3: Frontend Development (Next.js & Tailwind CSS)
+
+*   [ ] **Task 3.1:** **Core Layout & Navigation:**
+    *   [ ] Create `components/Layout.tsx` (Header, Footer, main content area). Apply base Tailwind styles.
+    *   [ ] Build `components/Header.tsx` with navigation links and placeholder for Search. Style with Tailwind.
+    *   [ ] Build `components/Footer.tsx` with copyright and placeholders for social links. Style with Tailwind.
+    *   [ ] Integrate Layout into `pages/_app.tsx`.
+*   [ ] **Task 3.2:** **Static Pages:**
+    *   [ ] Create `pages/index.tsx` (Homepage). Add static content. Style with Tailwind.
+    *   [ ] Create `pages/about.tsx`. Add static content & placeholders for social links. Style with Tailwind.
+    *   [ ] Create `pages/hobbies.tsx`. Add static content. Style with Tailwind.
+*   [ ] **Task 3.3:** **Dynamic Content - List Pages:**
+    *   [ ] Create list pages (`pages/reviews.tsx`, `pages/analysis.tsx`, etc. or a single `pages/blog.tsx` filtering by type).
+    *   [ ] Implement Supabase data fetching function in `lib/supabaseClient.ts` to get posts by `type`.
+    *   [ ] Use `getStaticProps` in list pages to fetch posts. Handle loading/error states.
+    *   [ ] Build `components/PostCard.tsx` for displaying post summaries. Style with Tailwind.
+    *   [ ] Render lists using `PostCard`, linking to detail pages via slug.
+*   [ ] **Task 3.4:** **Dynamic Content - Detail Pages:**
+    *   [ ] Create dynamic route `pages/posts/[slug].tsx`.
+    *   [ ] Implement `getStaticPaths` to fetch all post slugs from Supabase.
+    *   [ ] Implement `getStaticProps` to fetch individual post data by slug.
+    *   [ ] Build `components/PostLayout.tsx` (or similar) to display full post content (title, date, body). Use `react-markdown`. Style with Tailwind.
+*   [ ] **Task 3.5:** **Homepage Enhancements:**
+    *   [ ] Fetch recent posts in `pages/index.tsx` via `getStaticProps`.
+    *   [ ] Display recent posts using `PostCard`.
+*   [ ] **Task 3.6:** **Contact Form Implementation:**
+    *   [ ] Create `pages/contact.tsx`.
+    *   [ ] Build `components/ContactForm.tsx` with Name, Email, Message fields using Tailwind for styling. Add basic validation (e.g., required fields, email format). Consider `react-hook-form`.
+    *   [ ] Implement form submission logic: function to insert data into `contact_submissions` table using Supabase client.
+    *   [ ] Add user feedback (loading state, success/error messages).
+    *   [ ] (If using Supabase Function for email) Ensure the frontend calls the function correctly.
+*   [ ] **Task 3.7:** **Search Functionality Implementation:**
+    *   [ ] Build `components/SearchInput.tsx`. Add to Header. Style with Tailwind.
+    *   [ ] Implement search logic:
+        *   Option A (Client-side): Fetch all searchable posts data on initial load or via API route, filter in the browser. Suitable for small sites.
+        *   Option B (Server-side): Create `pages/search.tsx`. On form submit (or debounced input change), navigate to `/search?q=query`. Use `getServerSideProps` or client-side fetching in `pages/search.tsx` to call Supabase (potentially the search RPC function) with the query.
+    *   [ ] Build UI to display search results (list of matching posts with snippets). Style with Tailwind.
+*   [ ] **Task 3.8:** **Comments Section Implementation:**
+    *   [ ] Build `components/CommentList.tsx` to display comments fetched from Supabase based on `post_slug` or `post_id`. Style with Tailwind.
+    *   [ ] Build `components/CommentForm.tsx` with Name, Comment fields. Style with Tailwind.
+    *   [ ] Implement function to fetch comments for a given post slug/id. Use client-side fetching (SWR or React Query recommended for caching/revalidation).
+    *   [ ] Implement function to submit a new comment to the `comments` table, associating it with the current post. Refresh comment list on successful submission.
+    *   [ ] Integrate `CommentList` and `CommentForm` into the post detail page (`pages/posts/[slug].tsx`).
+*   [ ] **Task 3.9:** **Social/Professional Network Integration:**
+    *   [ ] Add social media icons (using `react-icons` or similar) with links to LinkedIn, GitHub in `components/Footer.tsx` and/or `pages/about.tsx`.
+    *   [ ] Add WeChat QR code image or link in `components/Footer.tsx` or `pages/contact.tsx`. Style appropriately.
+
+## Phase 4: Styling & Refinement (Tailwind CSS)
+
+*   [ ] **Task 4.1:** Apply consistent Tailwind CSS styling across all components and pages.
+*   [ ] **Task 4.2:** Ensure responsive design using Tailwind's breakpoints (sm, md, lg, xl, 2xl). Test thoroughly on different devices/screen sizes.
+*   [ ] **Task 4.3:** Refine typography, spacing, and color palette according to brand identity.
+*   [ ] **Task 4.4:** Style forms (Contact, Comments, Search) for usability and aesthetics, including focus, disabled, and validation states.
+*   [ ] **Task 4.5:** Add basic SEO metadata (`title`, `description`) to all pages using `next/head`. Ensure dynamic pages have relevant metadata.
+*   [ ] **Task 4.6:** Implement image optimization using `next/image` component where applicable.
+*   [ ] **Task 4.7:** Review UI/UX for clarity, consistency, and ease of use.
+*   [ ] **Task 4.8:** Perform basic accessibility checks (keyboard navigation, semantic HTML, color contrast).
+
+## Phase 5: Deployment & Testing
+
+*   [ ] **Task 5.1:** Push all code changes to the Git provider.
+*   [ ] **Task 5.2:** Create a new project on Vercel, connecting it to the Git repository.
+*   [ ] **Task 5.3:** Configure Vercel environment variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and any others like email service keys).
+*   [ ] **Task 5.4:** Trigger initial deployment on Vercel. Ensure build passes.
+*   [ ] **Task 5.5:** Test the deployed website thoroughly:
+    *   [ ] Check all pages load correctly.
+    *   [ ] Test navigation links.
+    *   [ ] Test dynamic content loading (posts).
+    *   [ ] Test contact form submission. Check Supabase table (and email notification if configured).
+    *   [ ] Test search functionality.
+    *   [ ] Test adding and viewing comments.
+    *   [ ] Test responsiveness on various devices.
+    *   [ ] Check social media links.
+*   [ ] **Task 5.6:** (Optional) Configure custom domain on Vercel.
+
+## Phase 6: Content Population & Launch
+
+*   [ ] **Task 6.1:** Add final content (About Me text, articles, reviews, notes, reflections, hobby details) via the Supabase dashboard. Ensure slugs are unique and meaningful.
+*   [ ] **Task 6.2:** Final review of all content and functionality.
+*   [ ] **Task 6.3:** Announce/Launch the website!
